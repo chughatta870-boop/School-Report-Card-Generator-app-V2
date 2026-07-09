@@ -1,0 +1,59 @@
+{
+  "id": "/",
+  "name": "GHS 124/NB Report Card Generator",
+  "short_name": "GHS124 Report Card",
+  "description": "Generate, save, and share official student report cards for Kachi to Class 8 — GHS 124/NB.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
+  "background_color": "#f4f1ea",
+  "theme_color": "#094a33",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["education", "productivity", "utilities"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Report Card",
+      "short_name": "New Card",
+      "description": "Create a new student report card",
+      "url": "./index.html?action=new",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Saved Report Cards",
+      "short_name": "Saved",
+      "description": "Open saved report cards",
+      "url": "./index.html?action=saved",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

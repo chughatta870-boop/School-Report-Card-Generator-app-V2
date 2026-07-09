@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>GHS 124/NB — Report Card Generator</title>
+<meta name="description" content="Generate, save, and share official student report cards for Kachi to Class 8 — GHS 124/NB.">
+<meta name="theme-color" content="#094a33">
+<meta name="color-scheme" content="light">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GHS124 Report Card">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+<link rel="icon" href="./icon-512.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===== Top App Bar ===== -->
+  <header class="appbar">
+    <div class="appbar-brand">
+      <img src="./icon-192.png" alt="" class="appbar-logo">
+      <div>
+        <p class="appbar-title">Report Card Generator</p>
+        <p class="appbar-sub">GHS 124/NB &middot; Kachi to Class 8</p>
+      </div>
+    </div>
+    <button id="savedBtn" class="icon-btn" title="Saved report cards" aria-label="Saved report cards">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M6 3h12a1 1 0 0 1 1 1v16.5a.5.5 0 0 1-.77.42L12 17l-6.23 3.92A.5.5 0 0 1 5 20.5V4a1 1 0 0 1 1-1z"/></svg>
+    </button>
+  </header>
+
+  <main class="layout">
+
+    <!-- ===== Form Panel ===== -->
+    <section class="panel form-panel" aria-label="Report card details form">
+
+      <details class="card-section" open>
+        <summary>School details</summary>
+        <div class="field-grid">
+          <label class="field">
+            <span>School name</span>
+            <input type="text" id="schoolName" value="Govt. High School 124/NB" maxlength="60">
+          </label>
+          <label class="field">
+            <span>School address / EMIS code (optional)</span>
+            <input type="text" id="schoolMeta" placeholder="e.g. Tehsil Sillanwali, District Sargodha">
+          </label>
+        </div>
+      </details>
+
+      <details class="card-section" open>
+        <summary>Student details</summary>
+        <div class="field-grid">
+          <label class="field">
+            <span>Student name</span>
+            <input type="text" id="studentName" placeholder="Student's full name">
+          </label>
+          <label class="field">
+            <span>Father's name</span>
+            <input type="text" id="fatherName" placeholder="Father's full name">
+          </label>
+          <label class="field">
+            <span>Class</span>
+            <select id="classSelect"></select>
+          </label>
+          <label class="field">
+            <span>Section (optional)</span>
+            <input type="text" id="section" placeholder="e.g. A">
+          </label>
+          <label class="field">
+            <span>Roll No.</span>
+            <input type="text" id="rollNo" placeholder="e.g. 12">
+          </label>
+          <label class="field">
+            <span>GR No. (optional)</span>
+            <input type="text" id="grNo" placeholder="General Register No.">
+          </label>
+        </div>
+      </details>
+
+      <details class="card-section" open>
+        <summary>Issue date</summary>
+        <div class="field-grid three">
+          <label class="field">
+            <span>Date</span>
+            <input type="number" id="issueDate" min="1" max="31" placeholder="DD">
+          </label>
+          <label class="field">
+            <span>Month</span>
+            <select id="issueMonth"></select>
+          </label>
+          <label class="field">
+            <span>Year</span>
+            <input type="number" id="issueYear" min="2000" max="2100" placeholder="YYYY">
+          </label>
+        </div>
+      </details>
+
+      <details class="card-section" open>
+        <summary>Subjects &amp; marks</summary>
+        <p class="hint">Total marks and obtained marks for each term. Passing marks: 33%.</p>
+        <div class="table-scroll">
+          <table id="subjectsTable" class="subjects-table">
+            <thead>
+              <tr>
+                <th class="col-subject" rowspan="2">Subject</th>
+                <th colspan="2">1st Term</th>
+                <th colspan="2">2nd Term</th>
+                <th colspan="2">Final Term</th>
+                <th class="col-del" rowspan="2"></th>
+              </tr>
+              <tr class="sub-head">
+                <th>Total</th><th>Obt.</th>
+                <th>Total</th><th>Obt.</th>
+                <th>Total</th><th>Obt.</th>
+              </tr>
+            </thead>
+            <tbody id="subjectsBody"></tbody>
+          </table>
+        </div>
+        <button id="addSubjectBtn" class="btn btn-ghost btn-small">+ Add subject</button>
+      </details>
+
+      <div class="form-actions">
+        <button id="generateBtn" class="btn btn-primary">Generate report card</button>
+        <button id="resetBtn" class="btn btn-ghost">New / Reset</button>
+      </div>
+    </section>
+
+    <!-- ===== Preview Panel ===== -->
+    <section class="panel preview-panel" aria-label="Report card preview">
+      <div class="preview-toolbar">
+        <button id="saveCardBtn" class="btn btn-outline btn-small">Save</button>
+        <button id="downloadBtn" class="btn btn-outline btn-small">Download PDF</button>
+        <button id="shareBtn" class="btn btn-outline btn-small">Share</button>
+        <button id="printBtn" class="btn btn-outline btn-small">Print</button>
+      </div>
+
+      <div class="card-stage">
+        <article id="reportCard" class="report-card">
+          <div id="watermarkLayer" class="watermark-layer" aria-hidden="true"></div>
+
+          <header class="rc-header">
+            <div class="rc-emblem">
+              <img src="./icon-192.png" alt="">
+            </div>
+            <div class="rc-headtext">
+              <h1 id="rcSchoolName">Govt. High School 124/NB</h1>
+              <p id="rcSchoolMeta" class="rc-meta"></p>
+              <p class="rc-title">Student Report Card</p>
+            </div>
+          </header>
+
+          <section class="rc-studentinfo">
+            <div class="rc-info-row">
+              <span class="rc-label">Student Name</span>
+              <span id="rcStudentName" class="rc-value">—</span>
+              <span class="rc-label">Father's Name</span>
+              <span id="rcFatherName" class="rc-value">—</span>
+            </div>
+            <div class="rc-info-row">
+              <span class="rc-label">Class</span>
+              <span id="rcClass" class="rc-value">—</span>
+              <span class="rc-label">Section</span>
+              <span id="rcSection" class="rc-value">—</span>
+            </div>
+            <div class="rc-info-row">
+              <span class="rc-label">Roll No.</span>
+              <span id="rcRollNo" class="rc-value">—</span>
+              <span class="rc-label">Date of Issue</span>
+              <span id="rcDate" class="rc-value">—</span>
+            </div>
+          </section>
+
+          <div class="rc-table-scroll">
+          <table class="rc-table">
+            <thead>
+              <tr>
+                <th class="col-subject" rowspan="2">Subject</th>
+                <th colspan="2">1st Term</th>
+                <th colspan="2">2nd Term</th>
+                <th colspan="2">Final Term</th>
+                <th rowspan="2">Grand<br>Total</th>
+                <th rowspan="2">Grand<br>Obt.</th>
+                <th rowspan="2">%</th>
+                <th rowspan="2">Result</th>
+              </tr>
+              <tr class="sub-head">
+                <th>Total</th><th>Obt.</th>
+                <th>Total</th><th>Obt.</th>
+                <th>Total</th><th>Obt.</th>
+              </tr>
+            </thead>
+            <tbody id="rcTableBody"></tbody>
+            <tfoot>
+              <tr class="rc-total-row">
+                <td class="col-subject">Total</td>
+                <td id="rcSumT1Total">0</td>
+                <td id="rcSumT1Obt">0</td>
+                <td id="rcSumT2Total">0</td>
+                <td id="rcSumT2Obt">0</td>
+                <td id="rcSumT3Total">0</td>
+                <td id="rcSumT3Obt">0</td>
+                <td id="rcSumGrand">0</td>
+                <td id="rcSumObtained">0</td>
+                <td id="rcSumPct">0%</td>
+                <td id="rcSumResult">—</td>
+              </tr>
+            </tfoot>
+          </table>
+          </div>
+
+          <section class="rc-summary">
+            <div class="rc-summary-box">
+              <span class="rc-summary-label">Total Marks</span>
+              <span id="rcTotalMarks" class="rc-summary-value">0</span>
+            </div>
+            <div class="rc-summary-box">
+              <span class="rc-summary-label">Obtained Marks</span>
+              <span id="rcObtainedMarks" class="rc-summary-value">0</span>
+            </div>
+            <div class="rc-summary-box">
+              <span class="rc-summary-label">Percentage</span>
+              <span id="rcPercentage" class="rc-summary-value">0%</span>
+            </div>
+            <div class="rc-summary-box">
+              <span class="rc-summary-label">Grade</span>
+              <span id="rcGrade" class="rc-summary-value">—</span>
+            </div>
+            <div class="rc-summary-box rc-result-box">
+              <span class="rc-summary-label">Overall Result</span>
+              <span id="rcOverallResult" class="rc-summary-value">—</span>
+            </div>
+          </section>
+
+          <footer class="rc-footer">
+            <div class="rc-signbox">
+              <div class="rc-signline"></div>
+              <span>Class Teacher Signature</span>
+            </div>
+            <div class="rc-signbox rc-stampbox">
+              <div class="rc-signline"></div>
+              <span>Principal Signature &amp; Stamp</span>
+            </div>
+          </footer>
+
+          <p class="rc-footnote">Passing marks: 33% &middot; Generated via GHS 124/NB Report Card Generator</p>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <p class="app-footer">Built for GHS 124/NB &middot; works offline &middot; installable</p>
+</div>
+
+<!-- Saved cards drawer -->
+<div id="savedDrawer" class="drawer" aria-hidden="true">
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <div class="drawer-panel">
+    <div class="drawer-head">
+      <h2>Saved report cards</h2>
+      <button id="closeDrawerBtn" class="icon-btn" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.7l-1.41-1.41L9.17 12 2.89 5.71 4.3 4.29l6.29 6.3 6.3-6.3z"/></svg>
+      </button>
+    </div>
+    <div id="savedList" class="saved-list"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="./script.js"></script>
+</body>
+</html>
